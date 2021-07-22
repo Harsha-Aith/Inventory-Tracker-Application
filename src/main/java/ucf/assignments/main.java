@@ -31,7 +31,7 @@ public class main extends Application
         try
         {
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Inventory.fxml"));
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root, 1000, 1000);
             primaryStage.setScene(scene);
 
             primaryStage.show();

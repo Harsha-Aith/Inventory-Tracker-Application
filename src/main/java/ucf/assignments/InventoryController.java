@@ -4,6 +4,8 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -45,25 +47,18 @@ public class InventoryController implements Initializable
     private Button deleteItemButton;
     @FXML
     private Button clearButton;
-   /* @FXML
-    private String name;
-    @FXML
-    private String serialNum;
-    @FXML
-    private Double price;
 
-    */
-
+    // create textfields for the 3 text boxes to input data
     @FXML
     private TextField name;
     @FXML
     private TextField serialNum;
     @FXML
     private TextField price;
+    @FXML
+    private TextField searchValue;
 
-    private String nameVal;
-    private String serialNumVal;
-    private Double priceVal;
+
 
     Stage p = new Stage();
 
@@ -74,6 +69,7 @@ public class InventoryController implements Initializable
     @Override
     public void initialize(URL url, ResourceBundle rb)
     {
+        // intialize the cell and cellvalue factories for the nameCol, serialNumCol, and priceCol
         nameCol.setCellFactory(TextFieldTableCell.forTableColumn());
         nameCol.setCellValueFactory((new PropertyValueFactory<>("name")));
 
@@ -97,12 +93,22 @@ public class InventoryController implements Initializable
         inventoryTable.setEditable(true);
         inventoryTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
+
     }
+
+
+
+
 
     @FXML
     public void addItemClicked(ActionEvent event) throws IOException
     {
-        if(event.getSource() == addItemButton)
+
+        // if the add button is clicked
+            // create a new item with the data from each field
+            // set the cell value factory for each field
+
+         if(event.getSource() == addItemButton)
         {
 
             Item item = new Item(name.getText(), serialNum.getText(), Double.parseDouble(price.getText()));
@@ -152,36 +158,174 @@ public class InventoryController implements Initializable
     @FXML
     public void deleteItemClicked(ActionEvent event)
     {
+        // if the delete button is clicked
+        // get the item that is selected
+        // remove all the items that are selected
         if(event.getSource() == deleteItemButton)
         {
             Item t = new Item(name.getText(), serialNum.getText(), Double.parseDouble(price.getText()));
             inventoryTable.setItems(itemManager.deleteItem(t));
+            inventoryTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             inventoryTable.getItems().removeAll(inventoryTable.getSelectionModel().getSelectedItem());
         }
     }
 
+
     @FXML
     public void clearAllItemsClicked(ActionEvent event)
     {
+        // if the clear button is clicked
+        // call the clear all items method in the item manager class
+        if(event.getSource() == clearButton)
+        {
+            itemManager.clearAllItems();
+        }
+    }
+
+    @FXML
+    public void editName()
+    {
+        // create an on edit commit action with an event handler
+        // create a new task that gets the row value
+        // load the fxml file
+        // create a try catch for the file
+        // create a scene and an alert to display in error if an invalid field is entered
+        // if the description is invalid (length < 1 or length > 256 and does not contain a tab)
+        // display an error saying that it is invalid and make them reenter another description
+        //if it is valid, display the new value changed by the user
+        // catch the IO exception with a print stack trace
+        Item t = inventoryTable.getSelectionModel().getSelectedItem();
+        nameCol.setEditable(true);
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        System.out.println("yayayayaya!!!!!!!!!!!!!!!!!!!!!");
+        nameCol.setOnEditCommit(event -> {
+            try {
+                Parent root = FXMLLoader.load(getClass().getResource("Inventory.fxml"));
+                Scene scene = new Scene(root);
+                p.setScene(scene);
+                Alert alert = new Alert(Alert.AlertType.ERROR, "");
+                alert.initModality(Modality.APPLICATION_MODAL);
+                alert.initOwner(p);
+
+
+                ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setName((String) event.getNewValue());
+                String newVal = (String) event.getNewValue();
+                if (newVal.length() < 1 || newVal.length() > 256 || newVal.contains("\t")) {
+                    System.out.println("New Value: " + newVal);
+                    alert.getDialogPane().setContentText("Invalid Description!! Must be between 1 and 256 Characters and have no commas!!");
+                    alert.getDialogPane().setHeaderText("Invalid Item");
+                    alert.showAndWait();
+
+                } else {
+                    System.out.println("New Value: " + newVal);
+                    ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setName((String) event.getNewValue());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        });
 
     }
 
     @FXML
-    public void editName(TableColumn.CellEditEvent cellEditEvent)
+    public void editSerialNum()
     {
+        // create an on edit commit action with an event handler
+        // create a new task that gets the row value
+        // load the fxml file
+        // create a try catch for the file
+        // create a scene and an alert to display in error if an invalid field is entered
+        // if the serial number is invalid
+        // display an error saying that it is invalid and make them enter another serial number
+        //if it is valid, display the new value changed by the user
+        // catch the IO exception with a print stack trace
+
+        Item t = inventoryTable.getSelectionModel().getSelectedItem();
+        serialNumCol.setEditable(true);
+        serialNumCol.setCellValueFactory(new PropertyValueFactory<>("serialNum"));
+        System.out.println("yayayayaya!!!!!!!!!!!!!!!!!!!!!");
+        serialNumCol.setOnEditCommit(event -> {
+            try {
+                Parent root = FXMLLoader.load(getClass().getResource("Inventory.fxml"));
+                Scene scene = new Scene(root);
+                p.setScene(scene);
+                Alert alert = new Alert(Alert.AlertType.ERROR, "");
+                alert.initModality(Modality.APPLICATION_MODAL);
+                alert.initOwner(p);
+
+
+                ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setSerialNum((String) event.getNewValue());
+                String newVal = (String) event.getNewValue();
+                if (newVal.length() != 10 || itemManager.checkDuplicates(serialNum.getText()) == true || !newVal.matches("[a-zA-Z0-9]*")) {
+                    System.out.println("New Value: " + newVal);
+                    alert.getDialogPane().setContentText("Invalid Serial #!! Must be between 10 characters, only contain letters and/or numbers, and be Unique!!");
+                    alert.getDialogPane().setHeaderText("Invalid Item");
+                    alert.showAndWait();
+
+                } else {
+                    System.out.println("New Value: " + newVal);
+                    ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setSerialNum((String) event.getNewValue());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        });
 
     }
 
     @FXML
-    public void editSerialNum(TableColumn.CellEditEvent cellEditEvent)
+    public void editPrice()
     {
+        // create an on edit commit action with an event handler
+        // create a new task that gets the row value
+        // load the fxml file
+        // create a try catch for the file
+        // create a scene and an alert to display in error if an invalid field is entered
+        // display the new value changed by the user
+        // catch the IO exception with a print stack trace
+        Item t = inventoryTable.getSelectionModel().getSelectedItem();
+        priceCol.setEditable(true);
+        priceCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        System.out.println("yayayayaya!!!!!!!!!!!!!!!!!!!!!");
+        priceCol.setOnEditCommit(event -> {
+            try {
+                Parent root = FXMLLoader.load(getClass().getResource("Inventory.fxml"));
+                Scene scene = new Scene(root);
+                p.setScene(scene);
+                Alert alert = new Alert(Alert.AlertType.ERROR, "");
+                alert.initModality(Modality.APPLICATION_MODAL);
+                alert.initOwner(p);
+
+
+                ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setPrice(Double.parseDouble(String.valueOf(event.getNewValue())));
+                String newVal = String.valueOf(event.getNewValue());
+                    System.out.println("New Value: " + newVal);
+                    ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setPrice(Double.parseDouble(String.valueOf(event.getNewValue())));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        });
 
     }
 
-    @FXML
-    public void editPrice(ActionEvent event)
+    public void searchClicked(ActionEvent event)
     {
-
+        // add a listener to the text entered in the search bar
+        // call the set predicate function from the filtered data in the ItemManafer class
+        // set it to the createPredicate function with the new search value in the text
+        // set the table to show the filtered data
+        searchValue.textProperty().addListener((observable, oldValue, newValue) ->
+                itemManager.filteredData.setPredicate(itemManager.createPredicate(newValue))
+        );
+        inventoryTable.setItems(itemManager.filteredData);
     }
 
+    public void importListClicked(ActionEvent event) {
+    }
+
+    public void exportListClicked(ActionEvent event) {
+    }
 }
