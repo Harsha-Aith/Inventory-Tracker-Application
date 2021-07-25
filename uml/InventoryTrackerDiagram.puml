@@ -1,11 +1,91 @@
 @startuml
-'https://plantuml.com/sequence-diagram
+'https://plantuml.com/class-diagram
 
-autonumber
+class main{
+main()
+start()
+}
 
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
+class InventoryController
+{
++ TableView<Item> inventoryTable;
+- TableColumn<Item, String> nameCol
+- TableColumn<Item, String> serialNumCol
+- TableColumn<Item, String> priceCol
+- Button addItemButton;
+- Button deleteItemButton;
+- Button clearButton;
+- MenuItem importList;
+- MenuItem exportList;
+- TextField name;
+- TextField serialNum;
+- TextField price;
+- TextField searchValue;
+- InventoryManager itemManager;
+- TextField listNameView;
++ FileChooser chooser;
++ ManageFiles files
++ Stage p;
++ ListManager manager
+// GUI: Event Handlers
++  initialize(URL url, ResourceBundle rb): void;
++  helpButtonClicked(ActionEvent event): void;
++  addItemClicked(ActionEvent event): void;
++  deleteItemClicked(ActionEvent event): void;
++  clearAllItemsClicked(ActionEvent event): void;
++  editName(): void;
++  editSerialNum(): void;
++  editPrice(): void;
++  searchClicked(ActionEvent event): void;
++  importListClicked(ActionEvent event): void;
++  exportListClicked(ActionEvent event): void
+}
 
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
+class InventoryManager
+{
+- String description;
+- LocalDate dueDate;
+- CheckBox isCompleted;
++ ObservableList<Task> list;
++ ObservableList<Task> completed;
++ ObservableList<Task> incomplete;
++ addItem();
++ deleteItem();
++ modifyItem();
++ editDescription();
++ editDueDate();
++ markComplete();
++ addAll();
++ ObservableList<Task> addCompleted();
++ ObservableList<Task> addIncomplete();
+
+
+}
+ListModel -- ListManager
+ListManager*-- Task
+ListController -- ManageFiles
+
+class ManageFiles
+{
++ getFileExtension(File): String
++ exportToTSV(Item): String
++ exportToHTML(Item): String
++ exportToJSON(Item): String
++ importTSV(File): ObservableList<Item>
++ importJSON(File): ObservableList<Item>
+}
+class Item
+{
+    -name: SimpleStringProperty
+    -serialNum: SimpleStringProperty
+    -price: SimpleStringProperty
+
+    +setName(String): void
+    +setSerialNum(String): void
+    +setPrice(String): void
+    +getName(): String
+    +getSerialNum(): String
+    +getPrice(): String
+   }
+
 @enduml

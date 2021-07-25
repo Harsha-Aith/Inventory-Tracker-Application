@@ -6,22 +6,22 @@ import javafx.fxml.FXML;
 public class Item
 {
     @FXML
-    SimpleStringProperty name;
+    public SimpleStringProperty name;
     @FXML
-    SimpleStringProperty serialNum;
-    double price;
+    public SimpleStringProperty serialNum;
+    public SimpleStringProperty price;
 
-    public Item(String name, String serialNum, double price)
+    public Item(String name, String serialNum, String price)
     {
         this.name = new SimpleStringProperty(name);
         this.serialNum = new SimpleStringProperty(serialNum);
-        this.price = price;
+        this.price = new SimpleStringProperty(price);
     }
 
 
-    public void setPrice(Double price)
+    public void setPrice(String price1)
     {
-        this.price = price;
+        price.set(price1);
     }
 
     public void setSerialNum(String serialNum1) {
@@ -40,9 +40,9 @@ public class Item
         return serialNum.get();
     }
 
-    public double getPrice()
+    public String getPrice()
     {
-        return price;
+        return price.get();
     }
 
 

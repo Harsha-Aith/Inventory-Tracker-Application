@@ -1,5 +1,7 @@
 package ucf.assignments;
 
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -7,23 +9,32 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.util.converter.DoubleStringConverter;
 
-import java.io.IOException;
+import java.awt.*;
+import java.io.*;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class InventoryController implements Initializable
@@ -36,7 +47,7 @@ public class InventoryController implements Initializable
     @FXML
     private TableColumn<Item, String> serialNumCol = new TableColumn("Serial Number");
     @FXML
-    private TableColumn<Item, Double> priceCol = new TableColumn("Value");
+    private TableColumn<Item, String> priceCol = new TableColumn("Value");
 
     // create add button, delete button, edit button, clear button, import and export list
 
@@ -47,6 +58,10 @@ public class InventoryController implements Initializable
     private Button deleteItemButton;
     @FXML
     private Button clearButton;
+    @FXML
+    private MenuItem importList;
+    @FXML
+    private MenuItem exportList;
 
     // create textfields for the 3 text boxes to input data
     @FXML
@@ -64,7 +79,11 @@ public class InventoryController implements Initializable
 
     InventoryManager itemManager = new InventoryManager();
 
-    ObservableList <Item> inventoryItems2 = FXCollections.<Item>observableArrayList(new Item("Jacob", "Smith", 90));
+    ObservableList <Item> inventoryItems2 = FXCollections.<Item>observableArrayList(new Item("Jacob", "Smith", "90"));
+
+    FileChooser chooser = new FileChooser();
+
+    ManageFiles files = new ManageFiles();
 
     @Override
     public void initialize(URL url, ResourceBundle rb)
@@ -78,7 +97,8 @@ public class InventoryController implements Initializable
 
         DoubleStringConverter d = new DoubleStringConverter();
         TextFieldTableCell cell = new TextFieldTableCell();
-        priceCol.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Double>() {
+        priceCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        /*{
             @Override
             public String toString(Double object) {
                 return String.valueOf(object);
@@ -86,9 +106,11 @@ public class InventoryController implements Initializable
 
             @Override
             public Double fromString(String string) {
-                return null;
+                return d.fromString(string);
             }
         }));
+
+         */
         priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
         inventoryTable.setEditable(true);
         inventoryTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -111,10 +133,10 @@ public class InventoryController implements Initializable
          if(event.getSource() == addItemButton)
         {
 
-            Item item = new Item(name.getText(), serialNum.getText(), Double.parseDouble(price.getText()));
+            Item item = new Item(name.getText(), serialNum.getText(), price.getText());
             nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
             serialNumCol.setCellValueFactory(new PropertyValueFactory<>("serialNum"));
-            priceCol.setCellValueFactory(new PropertyValueFactory<Item, Double>("price"));
+            priceCol.setCellValueFactory(new PropertyValueFactory<Item, String>("price"));
             //p = (Stage)anchorPane.getScene().getWindow();
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Inventory.fxml"));
             Scene scene = new Scene(root);
@@ -163,7 +185,7 @@ public class InventoryController implements Initializable
         // remove all the items that are selected
         if(event.getSource() == deleteItemButton)
         {
-            Item t = new Item(name.getText(), serialNum.getText(), Double.parseDouble(price.getText()));
+            Item t = new Item(name.getText(), serialNum.getText(), price.getText());
             inventoryTable.setItems(itemManager.deleteItem(t));
             inventoryTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             inventoryTable.getItems().removeAll(inventoryTable.getSelectionModel().getSelectedItem());
@@ -199,29 +221,22 @@ public class InventoryController implements Initializable
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         System.out.println("yayayayaya!!!!!!!!!!!!!!!!!!!!!");
         nameCol.setOnEditCommit(event -> {
-            try {
-                Parent root = FXMLLoader.load(getClass().getResource("Inventory.fxml"));
-                Scene scene = new Scene(root);
-                p.setScene(scene);
-                Alert alert = new Alert(Alert.AlertType.ERROR, "");
-                alert.initModality(Modality.APPLICATION_MODAL);
-                alert.initOwner(p);
+            Alert alert = new Alert(Alert.AlertType.ERROR, "");
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.initOwner(p);
 
 
+            ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setName((String) event.getNewValue());
+            String newVal = (String) event.getNewValue();
+            if (newVal.length() < 1 || newVal.length() > 256 || newVal.contains("\t")) {
+                System.out.println("New Value: " + newVal);
+                alert.getDialogPane().setContentText("Invalid Description!! Must be between 1 and 256 Characters and have no commas!!");
+                alert.getDialogPane().setHeaderText("Invalid Item");
+                alert.showAndWait();
+
+            } else {
+                System.out.println("New Value: " + newVal);
                 ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setName((String) event.getNewValue());
-                String newVal = (String) event.getNewValue();
-                if (newVal.length() < 1 || newVal.length() > 256 || newVal.contains("\t")) {
-                    System.out.println("New Value: " + newVal);
-                    alert.getDialogPane().setContentText("Invalid Description!! Must be between 1 and 256 Characters and have no commas!!");
-                    alert.getDialogPane().setHeaderText("Invalid Item");
-                    alert.showAndWait();
-
-                } else {
-                    System.out.println("New Value: " + newVal);
-                    ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setName((String) event.getNewValue());
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
 
         });
@@ -247,9 +262,7 @@ public class InventoryController implements Initializable
         System.out.println("yayayayaya!!!!!!!!!!!!!!!!!!!!!");
         serialNumCol.setOnEditCommit(event -> {
             try {
-                Parent root = FXMLLoader.load(getClass().getResource("Inventory.fxml"));
-                Scene scene = new Scene(root);
-                p.setScene(scene);
+
                 Alert alert = new Alert(Alert.AlertType.ERROR, "");
                 alert.initModality(Modality.APPLICATION_MODAL);
                 alert.initOwner(p);
@@ -257,19 +270,23 @@ public class InventoryController implements Initializable
 
                 ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setSerialNum((String) event.getNewValue());
                 String newVal = (String) event.getNewValue();
-                if (newVal.length() != 10 || itemManager.checkDuplicates(serialNum.getText()) == true || !newVal.matches("[a-zA-Z0-9]*")) {
+                if (newVal.length() != 10 || itemManager.checkDuplicates(serialNum.getText()) || !newVal.matches("[a-zA-Z0-9]*"))
+                {
                     System.out.println("New Value: " + newVal);
                     alert.getDialogPane().setContentText("Invalid Serial #!! Must be between 10 characters, only contain letters and/or numbers, and be Unique!!");
                     alert.getDialogPane().setHeaderText("Invalid Item");
                     alert.showAndWait();
 
-                } else {
-                    System.out.println("New Value: " + newVal);
-                    ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setSerialNum((String) event.getNewValue());
                 }
-            } catch (IOException e) {
+                else
+                {
+                    System.out.println("New Value: " + newVal);
+                    ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setSerialNum(event.getNewValue());
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
             }
+
 
         });
 
@@ -290,25 +307,24 @@ public class InventoryController implements Initializable
         priceCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         System.out.println("yayayayaya!!!!!!!!!!!!!!!!!!!!!");
         priceCol.setOnEditCommit(event -> {
-            try {
-                Parent root = FXMLLoader.load(getClass().getResource("Inventory.fxml"));
-                Scene scene = new Scene(root);
-                p.setScene(scene);
-                Alert alert = new Alert(Alert.AlertType.ERROR, "");
-                alert.initModality(Modality.APPLICATION_MODAL);
-                alert.initOwner(p);
+            Alert alert = new Alert(Alert.AlertType.ERROR, "");
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.initOwner(p);
 
 
-                ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setPrice(Double.parseDouble(String.valueOf(event.getNewValue())));
-                String newVal = String.valueOf(event.getNewValue());
-                    System.out.println("New Value: " + newVal);
-                    ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setPrice(Double.parseDouble(String.valueOf(event.getNewValue())));
-            } catch (IOException e) {
-                e.printStackTrace();
+            ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setPrice((String) event.getNewValue());
+            String newVal = (String) event.getNewValue();
+            if (!newVal.matches("[0-9]+") && !newVal.contains(".")) {
+                System.out.println("New Value: " + newVal);
+                alert.getDialogPane().setContentText("Invalid Price!!! Must be only Digits");
+                alert.getDialogPane().setHeaderText("Invalid Item");
+                alert.showAndWait();
+
+            } else {
+                System.out.println("New Value: " + newVal);
+                ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setPrice((String) event.getNewValue());
             }
-
-        });
-
+    });
     }
 
     public void searchClicked(ActionEvent event)
@@ -323,9 +339,142 @@ public class InventoryController implements Initializable
         inventoryTable.setItems(itemManager.filteredData);
     }
 
-    public void importListClicked(ActionEvent event) {
+    public void importListClicked(ActionEvent event) throws IOException
+    {
+        // initialize the file chooser to open a new window showing a new stage
+        // if the file is not null
+        // if(file != null)
+        // set the items and columns to read the data in the table
+        // call the importList function from the ManageFiles class to import the list
+        // create a new scene
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("txt", "*.txt"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json", "*.json"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("html", "*.html"));
+
+        Scene scene = new Scene(new Group());
+        Stage stage = new Stage();
+        stage.setTitle(chooser.getTitle());
+        stage.setWidth(300);
+        stage.setHeight(500);
+        importList.setOnAction(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                try {
+                    File selectedFile = chooser.showOpenDialog(stage);
+                    System.out.println("File Name: " + selectedFile);
+                    String fileExtension = files.getFileExtension(selectedFile);
+                    if (selectedFile != null) {
+                        inventoryTable.setEditable(true);
+                        if (fileExtension.equals("txt"))
+                        {
+                            System.out.println("File Extension: " + fileExtension);
+                            System.out.println("Size: " + itemManager.getList().size());
+                            inventoryTable.setItems(files.importTSV(selectedFile));
+                            inventoryTable.getColumns().setAll(nameCol, serialNumCol, priceCol);
+                            for (int i = 0; i < itemManager.getList().size(); i++)
+                                System.out.println(itemManager.getList().get(i).getName());
+                        } else if (fileExtension.equals("json"))
+                        {
+                            Gson gson = new Gson();
+                            BufferedReader br = null;
+                            br = new BufferedReader(new FileReader(selectedFile));
+                            ItemManager manager = gson.fromJson(br, ItemManager.class);
+                            System.out.println(manager);
+                            inventoryTable.setItems(files.importJSON(selectedFile));
+                            stage.setScene(scene);
+                            stage.show();
+
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            });
     }
 
-    public void exportListClicked(ActionEvent event) {
+
+    public void exportListClicked(ActionEvent event) throws IOException
+    {
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("txt", "*.txt"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json", "*.json"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("html", "*.html"));
+        Scene scene = new Scene(new Group());
+        Stage stage = new Stage();
+        stage.setTitle(chooser.getTitle());
+        stage.setWidth(300);
+        stage.setHeight(500);
+        exportList.setOnAction(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                try {
+                    File selectedFile = chooser.showSaveDialog(stage);
+                    System.out.println("File Name: " + selectedFile);
+                    if (selectedFile != null)
+                    {
+
+                        File fileName = selectedFile.getAbsoluteFile();
+                        FileWriter writer = new FileWriter(fileName);
+                        String fileExtension = files.getFileExtension(fileName);
+                        System.out.println("File Extension: " + fileExtension);
+                        if (fileExtension.equals("txt"))
+                        {
+                            System.out.println("File Extension: " + fileExtension);
+                            for (Item t : inventoryTable.getItems())
+                            {
+                                writer.append(files.exportToTSV(t));
+                            }
+                        }
+                        else if (fileExtension.equals("html"))
+                        {
+                            System.out.println("File Extension: " + fileExtension);
+                            try
+                            {
+                                //BufferedWriter bw = new BufferedWriter(writer);
+                                for (Item t : inventoryTable.getItems())
+                                {
+                                    writer.append(files.exportToHTML(t));
+                                }
+
+                            } catch (IOException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
+                        else if(fileExtension.equals("json"))
+                        {
+                            String json = "";
+                            json += "{\n\t\"Item\":[";
+                            int index = 0;
+                            for (Item item: inventoryTable.getItems())
+                            {
+                                json += files.exportToJSON(item);
+                                System.out.println("Size: " + inventoryTable.getItems().size());
+                                System.out.println("Index: " + index);
+                                System.out.println(json);
+                                if(inventoryTable.getItems().size()-1 > index)
+                                {
+                                    json += ",\n";
+                                }
+                                index++;
+                            }
+                            json += "]\n}\n";
+                            writer.append(json);
+
+                        }
+                        writer.flush();
+                        writer.close();
+                        stage.setScene(scene);
+                        stage.show();
+
+                    }
+                } catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+        });
     }
+
 }

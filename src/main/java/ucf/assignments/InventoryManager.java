@@ -17,14 +17,14 @@ public class InventoryManager
 {
 
     @FXML
-    private String name;
+    public String name;
     @FXML
-    private String serialNum;
+    public String serialNum;
     @FXML
-    private double price;
+    public String price;
 
    // create an observable list for the items and a filteredlist to store the search data
-     ObservableList <Item> inventoryItems = FXCollections.<Item>observableArrayList();
+   public ObservableList <Item> inventoryItems = FXCollections.<Item>observableArrayList();
     FilteredList<Item> filteredData = new FilteredList<>(inventoryItems, b -> true);
 
     @FXML
@@ -48,6 +48,11 @@ public class InventoryManager
     {
         // clear all items in the list
         inventoryItems.clear();
+    }
+
+    public ObservableList<Item> getList()
+    {
+        return inventoryItems;
     }
 
 
