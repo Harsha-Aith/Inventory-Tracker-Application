@@ -70,4 +70,10 @@ class InventoryManagerTest
 
     }
 
+
+    void testSortItems()
+    {
+        // tableview sorts items by column
+    }
+
 }

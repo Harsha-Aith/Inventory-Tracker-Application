@@ -79,7 +79,6 @@ public class InventoryController implements Initializable
 
     InventoryManager itemManager = new InventoryManager();
 
-    ObservableList <Item> inventoryItems2 = FXCollections.<Item>observableArrayList(new Item("Jacob", "Smith", "90"));
 
     FileChooser chooser = new FileChooser();
 
@@ -166,10 +165,18 @@ public class InventoryController implements Initializable
                 else if(itemManager.checkDuplicates(serialNum.getText()))
                     System.out.println("DUPLICATES!!!!");
 
-                alert.getDialogPane().setContentText("Invalid Serial #!! Must be between 10 characters, only contain letters and/or numbers, and be Unique!!");
-                alert.getDialogPane().setHeaderText("Invalid Item");
-                alert.showAndWait();
-            }
+
+                }
+
+                /*else if(!item.getPrice().matches(" ^^\\$(([1-9]\\d{0,2}(,\\d{3})*)|(([1-9]\\d*)?\\d))(\\.\\d\\d)?$"))
+                {
+                    alert.getDialogPane().setContentText("Invalid Price!! Must be between 10 characters, only contain letters and/or numbers, and be Unique!!");
+                    alert.getDialogPane().setHeaderText("Invalid Item");
+                    alert.showAndWait();
+                }
+
+                 */
+
             else {
                 inventoryTable.setItems(itemManager.addItem(item));
                 System.out.println("ADD BUTTON CLICKED");
@@ -207,13 +214,11 @@ public class InventoryController implements Initializable
     @FXML
     public void editName()
     {
+        // set the cell value factory of the column
         // create an on edit commit action with an event handler
         // create a new task that gets the row value
-        // load the fxml file
-        // create a try catch for the file
-        // create a scene and an alert to display in error if an invalid field is entered
-        // if the description is invalid (length < 1 or length > 256 and does not contain a tab)
-        // display an error saying that it is invalid and make them reenter another description
+        // if the name is invalid (length < 1 or length > 256 and does not contain a tab)
+        // display an error saying that it is invalid and make them reenter another name
         //if it is valid, display the new value changed by the user
         // catch the IO exception with a print stack trace
         Item t = inventoryTable.getSelectionModel().getSelectedItem();
@@ -228,14 +233,14 @@ public class InventoryController implements Initializable
 
             ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setName((String) event.getNewValue());
             String newVal = (String) event.getNewValue();
-            if (newVal.length() < 1 || newVal.length() > 256 || newVal.contains("\t")) {
+            if (newVal.length() < 1 || newVal.length() > 256 ||newVal.contains("\t") ) {
                 System.out.println("New Value: " + newVal);
-                alert.getDialogPane().setContentText("Invalid Description!! Must be between 1 and 256 Characters and have no commas!!");
+                alert.getDialogPane().setContentText("Invalid Name!! Must be between 1 and 256 Characters and have no commas!!");
                 alert.getDialogPane().setHeaderText("Invalid Item");
                 alert.showAndWait();
 
             } else {
-                System.out.println("New Value: " + newVal);
+                System.out.println("New Value Correct: " + newVal);
                 ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setName((String) event.getNewValue());
             }
 
@@ -268,19 +273,20 @@ public class InventoryController implements Initializable
                 alert.initOwner(p);
 
 
-                ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setSerialNum((String) event.getNewValue());
+                //((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setSerialNum((String) event.getNewValue());
                 String newVal = (String) event.getNewValue();
-                if (newVal.length() != 10 || itemManager.checkDuplicates(serialNum.getText()) || !newVal.matches("[a-zA-Z0-9]*"))
+                if (newVal.length() != 10 || itemManager.checkDuplicates(serialNum.getText()) || !newVal.matches("\"^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$\""))
                 {
                     System.out.println("New Value: " + newVal);
                     alert.getDialogPane().setContentText("Invalid Serial #!! Must be between 10 characters, only contain letters and/or numbers, and be Unique!!");
                     alert.getDialogPane().setHeaderText("Invalid Item");
                     alert.showAndWait();
+                    newVal = event.getOldValue();
 
                 }
                 else
                 {
-                    System.out.println("New Value: " + newVal);
+                    System.out.println("New Value Correct: " + newVal);
                     ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setSerialNum(event.getNewValue());
                 }
             } catch (Exception e) {
@@ -312,7 +318,7 @@ public class InventoryController implements Initializable
             alert.initOwner(p);
 
 
-            ((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setPrice((String) event.getNewValue());
+            //((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setPrice((String) event.getNewValue());
             String newVal = (String) event.getNewValue();
             if (!newVal.matches("[0-9]+") && !newVal.contains(".")) {
                 System.out.println("New Value: " + newVal);
@@ -373,7 +379,16 @@ public class InventoryController implements Initializable
                             inventoryTable.getColumns().setAll(nameCol, serialNumCol, priceCol);
                             for (int i = 0; i < itemManager.getList().size(); i++)
                                 System.out.println(itemManager.getList().get(i).getName());
-                        } else if (fileExtension.equals("json"))
+                        }
+                        else if (fileExtension.equals("html"))
+                        {
+                            inventoryTable.setItems(files.importHTML(selectedFile));
+                            inventoryTable.getColumns().setAll(nameCol, serialNumCol, priceCol);
+                            for (int i = 0; i < itemManager.getList().size(); i++)
+                                System.out.println(itemManager.getList().get(i).getName());
+
+                        }
+                        else if (fileExtension.equals("json"))
                         {
                             Gson gson = new Gson();
                             BufferedReader br = null;
@@ -431,10 +446,39 @@ public class InventoryController implements Initializable
                             try
                             {
                                 //BufferedWriter bw = new BufferedWriter(writer);
+                                writer.append("<head>\n" +
+                                        "<style>\n" +
+                                        "table {\n" +
+                                        "  font-family: arial, sans-serif;\n" +
+                                        "  border-collapse: collapse;\n" +
+                                        "  width: 100%;\n" +
+                                        "}\n" +
+                                        "\n" +
+                                        "td, th {\n" +
+                                        "  border: 1px solid #dddddd;\n" +
+                                        "  text-align: left;\n" +
+                                        "  padding: 8px;\n" +
+                                        "}\n" +
+                                        "\n" +
+                                        "tr:nth-child(even) {\n" +
+                                        "  background-color: #dddddd;\n" +
+                                        "}" +
+                                        "table, th, td {\n" +
+                                        "  border: 1px solid black;\n" +
+                                        "}\n" +
+                                        "</style>\n" +
+                                        "</head>\n" +
+                                        "<body>\n" +
+                                        "\n" +
+                                        "<table>\n" + "<tr>\n");
+                                writer.append( "  \t<th>Name</th>\n" +
+                                        "   \t<th>Serial Number</th>\n" +
+                                        "    \t<th>Value</th>   \n");
                                 for (Item t : inventoryTable.getItems())
                                 {
                                     writer.append(files.exportToHTML(t));
                                 }
+
 
                             } catch (IOException e)
                             {

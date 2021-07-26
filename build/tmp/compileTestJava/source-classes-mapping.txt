@@ -1,2 +1,4 @@
 ucf/assignments/InventoryManagerTest.java
  ucf.assignments.InventoryManagerTest
+ucf/assignments/ManageFilesTest.java
+ ucf.assignments.ManageFilesTest

@@ -18,7 +18,7 @@
          <columns>
             <TableColumn fx:id="nameCol" onEditCommit="#editName" prefWidth="308.0" text="Name" />
             <TableColumn fx:id="serialNumCol" minWidth="0.0" onEditCommit="#editSerialNum" prefWidth="146.5" text="Serial Number" />
-            <TableColumn fx:id="priceCol" onEditCommit="#editPrice" prefWidth="190.5" text="Value" />
+            <TableColumn fx:id="priceCol" onEditCommit="#editPrice" prefWidth="190.5" text="Price" />
          </columns>
       </TableView>
       <TextField fx:id="price" layoutX="363.0" layoutY="354.0" promptText="Value" />
@@ -37,16 +37,6 @@
               <MenuItem fx:id="importList" mnemonicParsing="false" onAction="#importListClicked" text="Import List" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="exportList" mnemonicParsing="false" onAction="#exportListClicked" text="Export Inventory List" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
             </items>
           </Menu>
         </menus>
