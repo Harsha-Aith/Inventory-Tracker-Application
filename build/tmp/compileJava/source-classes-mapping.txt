@@ -1,13 +1,13 @@
-ucf/assignments/ItemManager.java
- ucf.assignments.ItemManager
+ucf/assignments/ManageFiles.java
+ ucf.assignments.ManageFiles
 ucf/assignments/InventoryManager.java
  ucf.assignments.InventoryManager
 ucf/assignments/main.java
  ucf.assignments.main
 ucf/assignments/Item.java
  ucf.assignments.Item
-ucf/assignments/ManageFiles.java
- ucf.assignments.ManageFiles
+ucf/assignments/ItemManager.java
+ ucf.assignments.ItemManager
 ucf/assignments/InventoryController.java
  ucf.assignments.InventoryController
  ucf.assignments.InventoryController$1

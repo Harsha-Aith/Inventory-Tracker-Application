@@ -14,7 +14,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ucf.assignments.InventoryController">
    <children>
-      <TableView fx:id="inventoryTable" editable="true" layoutX="5.0" layoutY="96.0" prefHeight="237.0" prefWidth="607.0">
+      <TableView fx:id="inventoryTable" editable="true" layoutX="5.0" layoutY="96.0" prefHeight="237.0" prefWidth="607.0" style="-fx-background-color: blue;">
          <columns>
             <TableColumn fx:id="nameCol" onEditCommit="#editName" prefWidth="308.0" text="Name" />
             <TableColumn fx:id="serialNumCol" minWidth="0.0" onEditCommit="#editSerialNum" prefWidth="146.5" text="Serial Number" />
@@ -22,9 +22,9 @@
          </columns>
       </TableView>
       <TextField fx:id="price" layoutX="363.0" layoutY="354.0" promptText="Value" />
-      <Button fx:id="addItemButton" layoutX="537.0" layoutY="374.0" mnemonicParsing="false" onAction="#addItemClicked" text="Add" />
-      <Button fx:id="deleteItemButton" layoutX="531.0" layoutY="342.0" mnemonicParsing="false" onAction="#deleteItemClicked" text="Delete" />
-      <Button fx:id="clearButton" layoutX="510.0" layoutY="70.0" mnemonicParsing="false" onAction="#clearAllItemsClicked" text="Clear All Items" />
+      <Button fx:id="addItemButton" layoutX="537.0" layoutY="374.0" mnemonicParsing="false" onAction="#addItemClicked" style="-fx-background-color: green;" text="Add" textFill="WHITE" />
+      <Button fx:id="deleteItemButton" layoutX="531.0" layoutY="342.0" mnemonicParsing="false" onAction="#deleteItemClicked" style="-fx-background-color: red;" text="Delete" />
+      <Button fx:id="clearButton" layoutX="510.0" layoutY="70.0" mnemonicParsing="false" onAction="#clearAllItemsClicked" style="-fx-background-color: orange;" text="Clear All Items" />
       <TextField fx:id="serialNum" layoutX="195.0" layoutY="354.0" prefHeight="25.0" prefWidth="149.0" promptText="Serial #" />
       <Text layoutX="95.0" layoutY="66.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="99.63671875" />
       <TextField fx:id="name" layoutX="21.0" layoutY="354.0" prefHeight="25.0" prefWidth="149.0" promptText="Name" />

@@ -165,7 +165,6 @@ public class InventoryController implements Initializable
                 else if(itemManager.checkDuplicates(serialNum.getText()))
                     System.out.println("DUPLICATES!!!!");
 
-
                 }
 
                 /*else if(!item.getPrice().matches(" ^^\\$(([1-9]\\d{0,2}(,\\d{3})*)|(([1-9]\\d*)?\\d))(\\.\\d\\d)?$"))
@@ -275,9 +274,8 @@ public class InventoryController implements Initializable
 
                 //((Item) event.getTableView().getItems().get(event.getTablePosition().getRow())).setSerialNum((String) event.getNewValue());
                 String newVal = (String) event.getNewValue();
-                if (newVal.length() != 10 || itemManager.checkDuplicates(serialNum.getText()) || !newVal.matches("\"^(?=.*[A-Z])(?=.*[0-9])[A-Z0-9]+$\""))
+                if (newVal.length() != 10 || itemManager.checkDuplicates(newVal))
                 {
-                    System.out.println("New Value: " + newVal);
                     alert.getDialogPane().setContentText("Invalid Serial #!! Must be between 10 characters, only contain letters and/or numbers, and be Unique!!");
                     alert.getDialogPane().setHeaderText("Invalid Item");
                     alert.showAndWait();
@@ -347,12 +345,17 @@ public class InventoryController implements Initializable
 
     public void importListClicked(ActionEvent event) throws IOException
     {
-        // initialize the file chooser to open a new window showing a new stage
-        // if the file is not null
-        // if(file != null)
-        // set the items and columns to read the data in the table
-        // call the importList function from the ManageFiles class to import the list
-        // create a new scene
+        // add the extension filters
+        // create a stage in scene
+        // set the import click action
+        // create a try catch
+            // get the selected file
+        // if the file extension is txt
+            // set the table items to the importtsv
+        //else if the file extension is html
+            // set the table items to the importhtml
+        // else if the file extension is json
+            // set the table items to the importjson
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("txt", "*.txt"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json", "*.json"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("html", "*.html"));
@@ -411,6 +414,18 @@ public class InventoryController implements Initializable
 
     public void exportListClicked(ActionEvent event) throws IOException
     {
+        // add the extension filters
+        // create a stage in scene
+        // set the export click action
+        // create a try catch
+        // get the selected file
+        // if the file extension is txt
+        // append the writer with the  exportTSV function
+        //else if the file extension is html
+        // append the writer with the html string and the exportHTML function
+        // else if the file extension is json
+            // create a json string and add to it using the exporttoJSON function
+
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("txt", "*.txt"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json", "*.json"));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("html", "*.html"));
