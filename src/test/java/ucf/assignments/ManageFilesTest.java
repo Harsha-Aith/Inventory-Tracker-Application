@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -117,6 +118,22 @@ class ManageFilesTest {
     }
 
     @Test
-    void importJSON() {
+    void importJSON() throws FileNotFoundException {
+        // create a new manager
+        // fill up manager with items
+        // create a list of items and a manage files
+        // create a new file, call the import html function
+        // call the import html function to the second manager
+        // compare the contents of both managers
+        InventoryManager manager = new InventoryManager();
+        Item item =  new Item("VAD", "ZXC456VB78", "800");
+        ObservableList<Item> manager2 = FXCollections.observableArrayList();
+        ManageFiles files = new ManageFiles();
+        manager2 = files.importJSON(new File("src/test/java/ucf/assignments/BADDING.json"));
+        for (int i = 0; i < manager.getList().size(); i++) {
+
+            assertEquals(manager.getList().get(i).getName(), manager2.get(i).getName());
+        }
+
     }
 }

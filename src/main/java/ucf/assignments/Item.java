@@ -45,5 +45,9 @@ public class Item
         return price.get();
     }
 
+    public String toString()
+    {
+        return name.get() + "\t" + serialNum.get() + "\t" + price.get();
+    }
 
     }

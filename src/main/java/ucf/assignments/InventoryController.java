@@ -43,11 +43,11 @@ public class InventoryController implements Initializable
     public TableView<Item> inventoryTable = new TableView<>();
 
     @FXML
-    private TableColumn<Item, String> nameCol = new TableColumn("Name");
+    public TableColumn<Item, String> nameCol = new TableColumn("Name");
     @FXML
-    private TableColumn<Item, String> serialNumCol = new TableColumn("Serial Number");
+    public TableColumn<Item, String> serialNumCol = new TableColumn("Serial Number");
     @FXML
-    private TableColumn<Item, String> priceCol = new TableColumn("Value");
+    public TableColumn<Item, String> priceCol = new TableColumn("Value");
 
     // create add button, delete button, edit button, clear button, import and export list
 
@@ -393,14 +393,12 @@ public class InventoryController implements Initializable
                         }
                         else if (fileExtension.equals("json"))
                         {
-                            Gson gson = new Gson();
-                            BufferedReader br = null;
-                            br = new BufferedReader(new FileReader(selectedFile));
-                            ItemManager manager = gson.fromJson(br, ItemManager.class);
-                            System.out.println(manager);
-                            inventoryTable.setItems(files.importJSON(selectedFile));
-                            stage.setScene(scene);
-                            stage.show();
+                            ObservableList<Item> it = files.importJSON(selectedFile);
+                            inventoryTable.setItems(it);
+                            for (int i = 0; i < it.size(); i++) {
+                                System.out.println("Size: " + it.size());
+                                System.out.println(it.get(i).getName());
+                            }
 
                         }
                     }

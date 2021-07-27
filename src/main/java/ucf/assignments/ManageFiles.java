@@ -7,26 +7,24 @@ import com.google.gson.stream.JsonReader;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.simple.*;
+
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.Iterator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import java.io.InputStream;
 
 import javax.print.Doc;
-
-
-// import org.json.simple.*;
 
 public class ManageFiles
 {
@@ -162,62 +160,49 @@ public class ManageFiles
     }
 
 
-    public ObservableList<Item> importJSON(File filename) throws FileNotFoundException {
+    public ObservableList<Item> importJSON(File filename) throws FileNotFoundException
+    {
+        // create a list to hold the items
+        // create a json parser
+        // create a try catch
+        // parse the file and convert it into a json object
+        // create a json array of the items
+        // initialize the list
+        // create a for loop to go through the items
+        // create an object to hold each item
+        // create strings to extract the data from each key
+        // add the item to the list
+        // catch the exception
+        // return the list
         ObservableList<Item> item = null;
-        BufferedReader br = null;
-        Gson gson = new Gson();
-
         JSONParser parser = new JSONParser();
-        JSONObject items = null;
+        try {
 
-        boolean line;
-        try
-        {
-            br = new BufferedReader(new FileReader(filename));
-            ItemManager manager = gson.fromJson(br, ItemManager.class);
-            System.out.println(manager);
-            //Object obj = parser.parse(br);
-            /*
-            while(line = br.readLine() == null)
-            for(int i = 0; i < items.length(); i++)
+            Object obj = parser.parse(new FileReader(filename));
+            JSONObject jsonObject = (JSONObject) obj;
+
+            // A JSON array. JSONObject supports java.util.List interface.
+            JSONArray itemList = (JSONArray) jsonObject.get("Item");
+
+            System.out.println("List: " + itemList);
+            item = FXCollections.observableArrayList();
+
+            for (int i = 0; i < itemList.size(); i++)
             {
-                items = (JSONObject) .get(i);
-                String name = (String) items.get("itemName");
-                String serialNum = (String) items.get("itemSerialNum");
-                String price = (String) items.get("itemPrice");
-                System.out.println("name: " + name + "SerialNum: " + serialNum + "Price: " + price);
-
+                JSONObject itemHolder = (JSONObject) itemList.get(i);
+                String name = (String)itemHolder.get("itemName");
+                System.out.println("Name: " + name);
+                String serialNum =(String)itemHolder.get("itemSerialNum");
+                System.out.println("Serial: " + serialNum);
+                String price = (String)itemHolder.get("itemPrice");
+                System.out.println("Price: " + price);
+                Item t = new Item( name,  serialNum,  price);
+                item.add(t);
             }
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } finally {
-            if(br != null)
-            {
-                try{
-                    br.close();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
+            } catch(Exception e){
+                e.printStackTrace();
             }
-        }
-
-         */
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (JsonSyntaxException e) {
-            e.printStackTrace();
-        } catch (JsonIOException e) {
-            e.printStackTrace();
-        }
-        return (ObservableList<Item>) items;
-
-
+            return item;
     }
 }

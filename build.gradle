@@ -21,6 +21,8 @@ dependencies {
     implementation group: 'org.json', name: 'json', version: '20210307'
     implementation 'com.google.code.gson:gson:2.8.7'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    // https://mvnrepository.com/artifact/org.json/json
+    implementation group: 'org.json', name: 'json', version: '20210307'
     // jsoup HTML parser library @ https://jsoup.org/
     implementation 'org.jsoup:jsoup:1.12.1'
 }

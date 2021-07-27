@@ -1,0 +1,58 @@
+sad	ASDF4567J8	100
+Doc: <html>
+	 <head> 
+
+  <style>
+table {
+"  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+	td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}table, th, td {
+  border: 1px solid black;
+}
+
+</style> 
+
+ </head> 
+	 <body> 
+  <h1>Table Headers</h1> 
+  <h2>Horizontal headers:</h2>
+  <table> 
+   <tbody>
+	    <tr>
+     <th> </th>
+     <th>Name</th> 
+     <th>Serial Number</th> 
+     <th>Value</th> 
+    </tr> 
+	    <tr>
+     <td>chilsom</td>
+     <td>1234567884</td> 
+     <td>1.23 </td>
+    </tr> 
+
+    <tr> 
+     <td>jazz</td>
+     <td>1234567898</td> 
+     <td>1345 </td>
+    </tr> 
+   </tbody>
+  </table>
+	 </body>
+	</html>
+5Name: chilsom Serial Number: 1234567884 Value: 1.23
+2Name: jazz Serial Number: 1234567898 Value: 1345
+KList: [{"itemSerialNum":"ZXC456VB78","itemName":"VAD","itemPrice":"800"}]
+Name: VAD
+Serial: ZXC456VB78
+Price: 800
